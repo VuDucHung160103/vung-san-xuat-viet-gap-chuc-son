@@ -4,10 +4,14 @@
 border-radius:22px 22px 0 0;padding:10px;overflow-y:auto;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
 #handle{width:70px;height:6px;background:#bbb;border-radius:99px;margin:4px auto 10px}
 @media(min-width:768px){#panel{left:auto;right:20px;top:20px;bottom:20px;width:420px;height:auto;border-radius:16px}}
-table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px;font-size:16px}
-.drag-handle{width:60px;height:6px;border-radius:3px;background:#cfcfcf;margin:8px auto 10px;cursor:pointer}
-.sheet-collapsed #listContent{display:none}
-</style></head><body>
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px;font-size:16px}</style>
+<style>
+#listPanel{transition:max-height .35s ease;overflow:hidden;max-height:65vh;background:#f3faf3;border-top:3px solid #66bb6a;border-radius:20px 20px 0 0;box-shadow:0 -3px 12px rgba(0,0,0,.15)}
+#dragHandle{width:60px;height:6px;background:#66bb6a;border-radius:99px;margin:8px auto 10px;cursor:pointer}
+.card,.farmer-item,tr{background:#fff;border-radius:10px}
+input{border:1px solid #66bb6a!important}
+</style>
+</head><body>
 <div id=map></div><div id='header' style="position:fixed;top:12px;left:12px;right:12px;z-index:1000;background:#fff;border:2px solid #cfe8cf;border-radius:20px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.2)"><div style='display:flex;align-items:center'><img src='1759977964-logo-htx.jpg' style='width:56px;height:56px;border-radius:50%;object-fit:cover'><div style='flex:1;margin-left:12px'><div style='font-size:20px;font-weight:bold;color:#1b5e20'>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div><div style='color:#2e7d32;font-size:16px;font-weight:bold'>Vùng sản xuất Rau VietGAP</div><div style='margin-top:6px;color:#2e7d32;font-weight:bold'>🌱114 hộ sản xuất &nbsp;&nbsp; 📍96.007 m²</div></div><button id='toggle' style='width:42px;height:42px;border-radius:50%;border:none;background:#2e7d32;color:#fff;font-size:24px'>−</button></div></div><div id=panel style='bottom:0'><div id='handle'></div><b>HTX DVNNTH Chúc Sơn</b><br>114 hộ - 96,007 m²<br><input id=q placeholder='Tìm kiếm'><table><thead><tr><th>STT</th><th>Hộ</th><th>DT</th><th>Xứ đồng</th></tr></thead><tbody id=tb></tbody></table></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 let lastTouchEnd=0;
@@ -22,7 +26,7 @@ document.getElementById('toggle').onclick=function(){const p=document.getElement
 const map=L.map('map').setView([20.9141,105.7183],17);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
 const pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-const poly=L.polygon(pts,{color:'#ff7a00',weight:4,fillColor:'#32b44a',fillOpacity:0}).addTo(map);
+const poly=L.polygon(pts,{color:'#ff7a00',weight:4,fillOpacity:0}).addTo(map);
 const icon=new L.Icon({iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',iconSize:[25,41],iconAnchor:[12,41],shadowSize:[41,41]});
 pts.forEach(p=>L.marker(p,{icon}).addTo(map));
 
@@ -148,13 +152,15 @@ render(data);
 q.oninput=e=>{let k=e.target.value.toLowerCase();render(data.filter(x=>x.name.toLowerCase().includes(k)||String(x.stt).includes(k)||x.field.toLowerCase().includes(k)));};
 </script>
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
- const panel=document.querySelector('#listPanel')||document.body;
- const content=document.getElementById('listContent');
- const handle=document.getElementById('dragHandle');
- if(handle){
-  handle.addEventListener('click',()=>panel.classList.toggle('sheet-collapsed'));
- }
+window.addEventListener('load',()=>{
+ const p=document.getElementById('listPanel');
+ const h=document.getElementById('dragHandle');
+ if(!p||!h)return;
+ let open=true;
+ h.onclick=()=>{
+   open=!open;
+   p.style.maxHeight=open?'65vh':'22px';
+ };
 });
 </script>
 </body></html>
