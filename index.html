@@ -41,21 +41,19 @@ const pts=[
 [20.912075,105.718131]
 ];
 
-const poly = L.polygon(points,{
-    color:'#ff6f00',
-    weight:3,
-    fillColor:'#00ff66',
-    fillOpacity:0.25
+const poly=L.polygon(pts,{
+color:'#ff6f00',
+weight:3,
+fillColor:'#00ff66',
+fillOpacity:0.25
 }).addTo(map);
-points.forEach((p,i)=>{
-    L.marker(p).addTo(map).bindPopup("GPS " + (i+1));
-});
-map.fitBounds(poly.getBounds(), { padding:[30,30] });
+
+pts.forEach((p,i)=>L.marker(p).addTo(map).bindPopup("GPS "+(i+1)));
+
 poly.bindPopup(
     "<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn"
-);
-// Tự mở popup khi trang vừa tải
-poly.openPopup();
+).openPopup();
+map.fitBounds(poly.getBounds(),{padding:[30,30]});
 </script>
 </body>
 </html>
