@@ -47,17 +47,13 @@ const poly = L.polygon(points,{
     fillColor:'#00ff66',
     fillOpacity:0.25
 }).addTo(map);
-
 points.forEach((p,i)=>{
     L.marker(p).addTo(map).bindPopup("GPS " + (i+1));
 });
-
 map.fitBounds(poly.getBounds(), { padding:[30,30] });
-
 poly.bindPopup(
     "<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn"
 );
-
 // Tự mở popup khi trang vừa tải
 poly.openPopup();
 </script>
