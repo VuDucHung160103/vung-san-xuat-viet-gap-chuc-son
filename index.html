@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Vùng sản xuất VietGAP</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+html,body{margin:0;height:100%}
+#map{height:100vh;width:100%}
+.panel{
+position:absolute;left:50%;top:12px;transform:translateX(-50%);
+z-index:1000;background:#fff;padding:10px 16px;border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,.35);font-family:Arial,sans-serif;
+}
+.btn{display:inline-block;margin-top:8px;padding:6px 10px;background:#1976d2;color:#fff;
+text-decoration:none;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="panel">
+<b>Khu vực sản xuất Rau VietGAP</b><br>
+HTX DVNNTH Chúc Sơn<br>
+<a class="btn" target="_blank"
+href="https://www.google.com/maps/search/?api=1&query=20.914208,105.718254">
+Mở trên Google Maps
+</a>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('map');
+
+L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+{maxZoom:19, attribution:'© Esri'}
+).addTo(map);
+
+L.tileLayer(
+'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+{maxZoom:19}
+).addTo(map);
+
+const pts=[
+[20.913361,105.720369],
+[20.915914,105.718817],
+[20.915481,105.715700],
+[20.912075,105.718131]
+];
+
+const poly=L.polygon(pts,{
+color:'#ff6f00',
+weight:3,
+fillColor:'#00ff66',
+fillOpacity:0.25
+}).addTo(map);
+
+pts.forEach((p,i)=>L.marker(p).addTo(map).bindPopup("GPS "+(i+1)));
+
+poly.bindPopup("<b>Vùng sản xuất Rau VietGAP</b><br>HTX DVNNTH Chúc Sơn");
+
+map.fitBounds(poly.getBounds(),{padding:[30,30]});
+</script>
+</body>
+</html>
