@@ -1,12 +1,20 @@
-<!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<!doctype html><html lang=vi><head><meta charset=utf-8><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>html,body,#map{height:100%;margin:0}#map{position:fixed;inset:0}#panel{position:fixed;left:0;right:0;bottom:0;height:38vh;background:#fff;z-index:999;
+<style>html,body,#map{height:100%;margin:0;touch-action:manipulation;overscroll-behavior:none;-webkit-text-size-adjust:100%}#map{position:fixed;inset:0}#panel{position:fixed;left:0;right:0;bottom:0;height:38vh;background:#fff;z-index:999;
 border-radius:22px 22px 0 0;padding:10px;overflow-y:auto;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
 #handle{width:70px;height:6px;background:#bbb;border-radius:99px;margin:4px auto 10px}
 @media(min-width:768px){#panel{left:auto;right:20px;top:20px;bottom:20px;width:420px;height:auto;border-radius:16px}}
-table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px}</style></head><body>
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px;font-size:16px}</style></head><body>
 <div id=map></div><div id=panel><div id='handle'></div><b>HTX DVNNTH Chúc Sơn</b><br>114 hộ - 96,007 m²<br><input id=q placeholder='Tìm kiếm'><table><thead><tr><th>STT</th><th>Hộ</th><th>DT</th><th>Xứ đồng</th></tr></thead><tbody id=tb></tbody></table></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+let lastTouchEnd=0;
+document.addEventListener('touchend',function(e){
+ const now=Date.now();
+ if(now-lastTouchEnd<=300)e.preventDefault();
+ lastTouchEnd=now;
+},{passive:false});
+
+</script>
 <script>
 const map=L.map('map').setView([20.9141,105.7183],17);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
