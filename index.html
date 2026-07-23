@@ -1,245 +1,719 @@
-<!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Vùng sản xuất Rau VietGAP</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Vùng sản xuất Rau VietGAP - HTX DVNNTH Chúc Sơn</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <style>
-body{margin:0;font-family:Arial;background:#eef3ef}
-#map{height:45vh}
-.wrap{max-width:1300px;margin:auto;padding:16px}
-.info{background:#fff;margin-top:-30px;position:relative;border-radius:16px;padding:18px;box-shadow:0 4px 14px #0002}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.s{background:#eaf8ee;padding:10px;border-radius:10px;text-align:center}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #bbb;margin:16px 0}
-.cards{display:block}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px #0001}
-.top{display:flex;justify-content:space-between;gap:10px}
-.sub{color:#666;margin-top:6px}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{padding:10px;border:1px solid #ddd}
-th{background:#2e7d32;color:#fff;position:sticky;top:0}
-.desktop{display:none}
-@media(min-width:900px){
-#map{height:100vh;position:sticky;top:0}
-.layout{display:grid;grid-template-columns:55% 45%}
-.wrap{padding:0}
-.right{padding:20px;overflow:auto;height:100vh}
-.cards{display:none}
-.desktop{display:block}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
 }
-</style></head><body>
-<div class="layout">
+
+html,body{
+height:100%;
+overflow:hidden;
+background:#f5f5f5;
+}
+
+#map{
+position:absolute;
+inset:0;
+z-index:1;
+}
+
+.header{
+position:absolute;
+top:15px;
+left:50%;
+transform:translateX(-50%);
+z-index:999;
+background:white;
+padding:14px 20px;
+border-radius:14px;
+box-shadow:0 5px 20px rgba(0,0,0,.2);
+width:min(95%,520px);
+}
+
+.header h2{
+color:#16823b;
+font-size:20px;
+margin-bottom:4px;
+}
+
+.header p{
+color:#666;
+font-size:14px;
+}
+
+.info{
+position:absolute;
+left:15px;
+top:110px;
+background:white;
+padding:15px;
+border-radius:14px;
+box-shadow:0 5px 20px rgba(0,0,0,.18);
+width:250px;
+z-index:999;
+}
+
+.info div{
+display:flex;
+justify-content:space-between;
+padding:8px 0;
+border-bottom:1px solid #eee;
+font-size:14px;
+}
+
+.info div:last-child{
+border:none;
+}
+
+.search{
+position:absolute;
+top:110px;
+left:50%;
+transform:translateX(-50%);
+width:min(92%,500px);
+z-index:999;
+}
+
+.search input{
+
+width:100%;
+
+padding:14px 18px;
+
+border:none;
+
+border-radius:40px;
+
+outline:none;
+
+font-size:15px;
+
+box-shadow:0 4px 18px rgba(0,0,0,.2);
+
+}
+
+.sheet{
+
+position:absolute;
+
+left:0;
+
+right:0;
+
+bottom:0;
+
+height:48%;
+
+background:#fff;
+
+z-index:999;
+
+border-radius:24px 24px 0 0;
+
+display:flex;
+
+flex-direction:column;
+
+box-shadow:0 -6px 20px rgba(0,0,0,.25);
+
+transition:.3s;
+
+}
+
+.sheet.expand{
+
+height:88%;
+
+}
+
+.handle{
+
+width:70px;
+
+height:7px;
+
+background:#bfbfbf;
+
+margin:10px auto;
+
+border-radius:30px;
+
+cursor:pointer;
+
+}
+
+.title{
+
+padding:0 18px 15px;
+
+display:flex;
+
+justify-content:space-between;
+
+font-weight:bold;
+
+font-size:18px;
+
+}
+
+.list{
+
+flex:1;
+
+overflow:auto;
+
+padding:0 15px 20px;
+
+}
+
+.card{
+
+background:#fff;
+
+border:1px solid #e8e8e8;
+
+border-radius:12px;
+
+padding:14px;
+
+margin-bottom:12px;
+
+}
+
+.card h4{
+
+color:#16823b;
+
+margin-bottom:8px;
+
+}
+
+.card p{
+
+font-size:14px;
+
+padding:3px 0;
+
+}
+
+table{
+
+display:none;
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+th{
+
+background:#16823b;
+
+color:#fff;
+
+padding:12px;
+
+}
+
+td{
+
+padding:10px;
+
+border-bottom:1px solid #eee;
+
+}
+
+tr:hover{
+
+background:#f5fff7;
+
+}
+
+@media(min-width:1024px){
+
+.sheet{
+
+width:430px;
+
+left:auto;
+
+height:100%;
+
+border-radius:0;
+
+}
+
+.card{
+
+display:none;
+
+}
+
+table{
+
+display:table;
+
+}
+
+.search{
+
+right:20px;
+
+left:auto;
+
+transform:none;
+
+width:390px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
 <div id="map"></div>
-<div class="right"><div class="wrap">
-<div class="info">
-<h2>🌱 Vùng sản xuất Rau VietGAP</h2>
-<div>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div>
-<div class="stats">
-<div class=s><b>114</b><br>Nông hộ</div>
-<div class=s><b>96,007 m²</b><br>Diện tích</div>
-<div class=s><b>An Phú</b><br>Chúc Sơn</div>
+
+<div class="header">
+
+<h2>Vùng sản xuất Rau VietGAP</h2>
+
+<p>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</p>
+
 </div>
-<input id=q placeholder="🔍 Tìm kiếm hộ hoặc diện tích...">
-<div id=count></div>
-<div class=cards id=mobile><div class="card"><div class="top"><b>1. Lê Chí Thân</b><span>573 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>2. Nguyễn Chí Nhâm</b><span>1,343 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>3. Trịnh Hữu Chiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>4. Lê Thị Hạnh</b><span>772 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>5. Nguyễn Chí Hợi (Dung)</b><span>264 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>6. Đào Xuân Ánh</b><span>744 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>7. Đào Duy Thành</b><span>848 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>8. Trịnh Hữu Sơn (hiên)</b><span>611 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>9. Trịnh Hữu Uyên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>10. Trịnh Hữu Tuấn</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>11. Đào Thị Vi</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>12. Lê Thị Lý ( Bạo)</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>13. Nguyễn Thị Huân</b><span>522 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>14. Đào Xuân Công</b><span>624 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>15. Trịnh Hữu Khanh</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>16. Đào Xuân Tý</b><span>388 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>17. Nguyễn Chí Đắc</b><span>456 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>18. Nguyễn Chí Sơn (hà)</b><span>407 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>19. Đào Xuân Anh</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>20. Nguyễn Chí Sỹ</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>21. Nguyễn Kim Tài</b><span>458 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>22. Nguyễn Chí Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>23. Đào Xuân Tú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>24. Đào Xuân Lân</b><span>834 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>25. Đỗ Thị Thuỷ</b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>26. Đào Xuân Phương</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>27. Đào Xuân Hữu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>28. Đào Xuân Khiên</b><span>2,880 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>29. Đào Xuân Huỳnh (Thắng)</b><span>576 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>30. Nguyễn Chí Tiến</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>31. Đào Xuân Hải</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>32. Lê Chí Trụ</b><span>412 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>33. Nguyễn Chí Phú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>34. Trịnh Hữu Nhạ</b><span>335 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>35. Nguyễn Chí Sơn (luyến)</b><span>734 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>36. Đặng Đình Chiến</b><span>747 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>37. Nguyễn Chí Khoa ( Chiêm)</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>38. Nguyễn Chí Hiền</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>39. Lê Thị Lơ</b><span>797 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>40. Nguyễn Chí Mão</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>41. Đào Xuân Kinh</b><span>1,104 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>42. Trịnh Hữu Cầu</b><span>608 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>43. Đặng Đình Thuyết</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>44. Nguyễn Chí An (Thảo)</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>45. Lê Thị Na</b><span>1,248 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>46. Nguyễn Chí Giáo</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>47. Lê Thị Hợi</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>48. Đào Xuân Quỳnh</b><span>596 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>49. Nguyễn Chí Bằng</b><span>1,368 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>50. Nguyễn Chí Canh</b><span>2,952 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>51. Nguyễn Thị Viên</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>52. Nguyễn Thị Thìn</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>53. Đào Xuân Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>54. Nguyễn Chí Túc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>55. Đào Xuân Thành</b><span>588 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>56. Trịnh Hữu Quý</b><span>380 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>57. Đào Xuân Vệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>58. Đặng Thị Thiết</b><span>565 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>59. Nguyễn Chí Trường</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>60. Nguyễn Thị Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>61. Đặng Đình Bào</b><span>1,133 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>62. Đào Xuân Thiên</b><span>460 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>63. Nguyễn Chí Hùng (Thuý)</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>64. Lê Thị Sáu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>65. Đào Xuân Cận</b><span>731 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>66. Đào Xuân Dậu</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>67. Trịnh Thị Hiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>68. Đào Xuân Hảo</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>69. Lê Chí Dịch</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>70. Trịnh Xuân Trường</b><span>2,304 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>71. Trịnh Hữu Hạ</b><span>1,200 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>72. Trịnh Hữu Tuất</b><span>2,208 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>73. Trọnh Trọng Năng</b><span>203 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>74. Trịnh Thị Đồi</b><span>640 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>75. Nguyễn Thị Cúc</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>76. Nguyễn Chí Soát</b><span>846 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>77. Nguyễn Chí Khoát</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>78. Nguyễn Chí Thặng</b><span>2,016 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>79. Trịnh Hữu Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>80. Trịnh Hữu Thức </b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>81. Nguyễn Chí Cảnh</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>82. Lê Thị Lên</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>83. Nguyễn Thị Chỉnh</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>84. Trịnh Hữu Phương</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>85. Nguyễn Chí Xuân</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>86. Lê Chí Quý</b><span>940 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>87. Đặng Đình Đoan</b><span>2,160 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>88. Lê Chí Chúc</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>89. Đặng Đình Tạo</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>90. Lê Chí Bản</b><span>3,008 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>91. Đào Thị Hoạt</b><span>724 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>92. Lê Chí Hồng</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>93. Đặng Hải Hoàn (Lan)</b><span>728 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>94. Lê Chí Sùng</b><span>552 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>95. Lê Chí Giang</b><span>506 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>96. Trịnh Hữu Nhu</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>97. Đặng Đình Du</b><span>648 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>98. Lê Chí Viên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>99. Nguyễn Chí Tuệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>100. Lê Chí Phúc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>101. Lê Chí Sơn ( Thao)</b><span>1,476 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>102. Đào Thị Mến</b><span>447 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>103. Lê Chí Luân</b><span>936 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>104. Lê Chí Hội</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>105. Lê Chí Hợi</b><span>804 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>106. Lê Chí Trường</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>107. Trịnh Thị Thạo</b><span>900 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>108. Trịnh Thị Nhẫn</b><span>1,872 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>109. Trịnh Hữu Thới</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>110. Trịnh Hữu Thuận</b><span>750 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>111. Đào Xuân Trường</b><span>2,448 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>112. Lê Chí Hiên</b><span>600 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>113. Nguyễn Chí Quý</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>114. Đào Xuân Tùng</b><span>449 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div></div>
-<div class=desktop><table><thead><tr><th>STT</th><th>Hộ</th><th>Diện tích</th><th>Xứ đồng</th></tr></thead><tbody id=tb><tr><td>1</td><td>Lê Chí Thân</td><td>573 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>2</td><td>Nguyễn Chí Nhâm</td><td>1,343 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>3</td><td>Trịnh Hữu Chiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>4</td><td>Lê Thị Hạnh</td><td>772 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>5</td><td>Nguyễn Chí Hợi (Dung)</td><td>264 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>6</td><td>Đào Xuân Ánh</td><td>744 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>7</td><td>Đào Duy Thành</td><td>848 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>8</td><td>Trịnh Hữu Sơn (hiên)</td><td>611 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>9</td><td>Trịnh Hữu Uyên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>10</td><td>Trịnh Hữu Tuấn</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>11</td><td>Đào Thị Vi</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>12</td><td>Lê Thị Lý ( Bạo)</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>13</td><td>Nguyễn Thị Huân</td><td>522 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>14</td><td>Đào Xuân Công</td><td>624 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>15</td><td>Trịnh Hữu Khanh</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>16</td><td>Đào Xuân Tý</td><td>388 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>17</td><td>Nguyễn Chí Đắc</td><td>456 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>18</td><td>Nguyễn Chí Sơn (hà)</td><td>407 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>19</td><td>Đào Xuân Anh</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>20</td><td>Nguyễn Chí Sỹ</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>21</td><td>Nguyễn Kim Tài</td><td>458 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>22</td><td>Nguyễn Chí Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>23</td><td>Đào Xuân Tú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>24</td><td>Đào Xuân Lân</td><td>834 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>25</td><td>Đỗ Thị Thuỷ</td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>26</td><td>Đào Xuân Phương</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>27</td><td>Đào Xuân Hữu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>28</td><td>Đào Xuân Khiên</td><td>2,880 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>29</td><td>Đào Xuân Huỳnh (Thắng)</td><td>576 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>30</td><td>Nguyễn Chí Tiến</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>31</td><td>Đào Xuân Hải</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>32</td><td>Lê Chí Trụ</td><td>412 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>33</td><td>Nguyễn Chí Phú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>34</td><td>Trịnh Hữu Nhạ</td><td>335 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>35</td><td>Nguyễn Chí Sơn (luyến)</td><td>734 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>36</td><td>Đặng Đình Chiến</td><td>747 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>37</td><td>Nguyễn Chí Khoa ( Chiêm)</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>38</td><td>Nguyễn Chí Hiền</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>39</td><td>Lê Thị Lơ</td><td>797 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>40</td><td>Nguyễn Chí Mão</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>41</td><td>Đào Xuân Kinh</td><td>1,104 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>42</td><td>Trịnh Hữu Cầu</td><td>608 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>43</td><td>Đặng Đình Thuyết</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>44</td><td>Nguyễn Chí An (Thảo)</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>45</td><td>Lê Thị Na</td><td>1,248 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>46</td><td>Nguyễn Chí Giáo</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>47</td><td>Lê Thị Hợi</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>48</td><td>Đào Xuân Quỳnh</td><td>596 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>49</td><td>Nguyễn Chí Bằng</td><td>1,368 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>50</td><td>Nguyễn Chí Canh</td><td>2,952 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>51</td><td>Nguyễn Thị Viên</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>52</td><td>Nguyễn Thị Thìn</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>53</td><td>Đào Xuân Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>54</td><td>Nguyễn Chí Túc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>55</td><td>Đào Xuân Thành</td><td>588 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>56</td><td>Trịnh Hữu Quý</td><td>380 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>57</td><td>Đào Xuân Vệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>58</td><td>Đặng Thị Thiết</td><td>565 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>59</td><td>Nguyễn Chí Trường</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>60</td><td>Nguyễn Thị Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>61</td><td>Đặng Đình Bào</td><td>1,133 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>62</td><td>Đào Xuân Thiên</td><td>460 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>63</td><td>Nguyễn Chí Hùng (Thuý)</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>64</td><td>Lê Thị Sáu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>65</td><td>Đào Xuân Cận</td><td>731 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>66</td><td>Đào Xuân Dậu</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>67</td><td>Trịnh Thị Hiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>68</td><td>Đào Xuân Hảo</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>69</td><td>Lê Chí Dịch</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>70</td><td>Trịnh Xuân Trường</td><td>2,304 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>71</td><td>Trịnh Hữu Hạ</td><td>1,200 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>72</td><td>Trịnh Hữu Tuất</td><td>2,208 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>73</td><td>Trọnh Trọng Năng</td><td>203 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>74</td><td>Trịnh Thị Đồi</td><td>640 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>75</td><td>Nguyễn Thị Cúc</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>76</td><td>Nguyễn Chí Soát</td><td>846 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>77</td><td>Nguyễn Chí Khoát</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>78</td><td>Nguyễn Chí Thặng</td><td>2,016 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>79</td><td>Trịnh Hữu Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>80</td><td>Trịnh Hữu Thức </td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>81</td><td>Nguyễn Chí Cảnh</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>82</td><td>Lê Thị Lên</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>83</td><td>Nguyễn Thị Chỉnh</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>84</td><td>Trịnh Hữu Phương</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>85</td><td>Nguyễn Chí Xuân</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>86</td><td>Lê Chí Quý</td><td>940 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>87</td><td>Đặng Đình Đoan</td><td>2,160 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>88</td><td>Lê Chí Chúc</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>89</td><td>Đặng Đình Tạo</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>90</td><td>Lê Chí Bản</td><td>3,008 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>91</td><td>Đào Thị Hoạt</td><td>724 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>92</td><td>Lê Chí Hồng</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>93</td><td>Đặng Hải Hoàn (Lan)</td><td>728 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>94</td><td>Lê Chí Sùng</td><td>552 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>95</td><td>Lê Chí Giang</td><td>506 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>96</td><td>Trịnh Hữu Nhu</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>97</td><td>Đặng Đình Du</td><td>648 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>98</td><td>Lê Chí Viên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>99</td><td>Nguyễn Chí Tuệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>100</td><td>Lê Chí Phúc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>101</td><td>Lê Chí Sơn ( Thao)</td><td>1,476 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>102</td><td>Đào Thị Mến</td><td>447 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>103</td><td>Lê Chí Luân</td><td>936 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>104</td><td>Lê Chí Hội</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>105</td><td>Lê Chí Hợi</td><td>804 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>106</td><td>Lê Chí Trường</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>107</td><td>Trịnh Thị Thạo</td><td>900 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>108</td><td>Trịnh Thị Nhẫn</td><td>1,872 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>109</td><td>Trịnh Hữu Thới</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>110</td><td>Trịnh Hữu Thuận</td><td>750 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>111</td><td>Đào Xuân Trường</td><td>2,448 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>112</td><td>Lê Chí Hiên</td><td>600 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>113</td><td>Nguyễn Chí Quý</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>114</td><td>Đào Xuân Tùng</td><td>449 m²</td><td>An Phú - Chúc Sơn</td></tr></tbody></table></div>
-</div></div></div></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const map=L.map('map');
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}').addTo(map);
-let pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-let p=L.polygon(pts,{color:'green',fillOpacity:.35}).addTo(map);
-map.fitBounds(p.getBounds());
-p.bindPopup("<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn").openPopup();
-const q=document.getElementById('q');
-function filter(){
-let v=q.value.toLowerCase(),n=0;
-document.querySelectorAll('.card').forEach(c=>{let ok=c.innerText.toLowerCase().includes(v);c.style.display=ok?'':'none';if(ok)n++;});
-document.querySelectorAll('#tb tr').forEach(r=>{let ok=r.innerText.toLowerCase().includes(v);r.style.display=ok?'':'none';});
-count.innerHTML='Hiển thị '+n+' / 114 nông hộ';
-}
-filter();q.oninput=filter;
-</script></body></html><!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Vùng sản xuất Rau VietGAP</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<style>
-body{margin:0;font-family:Arial;background:#eef3ef}
-#map{height:45vh}
-.wrap{max-width:1300px;margin:auto;padding:16px}
-.info{background:#fff;margin-top:-30px;position:relative;border-radius:16px;padding:18px;box-shadow:0 4px 14px #0002}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.s{background:#eaf8ee;padding:10px;border-radius:10px;text-align:center}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #bbb;margin:16px 0}
-.cards{display:block}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px #0001}
-.top{display:flex;justify-content:space-between;gap:10px}
-.sub{color:#666;margin-top:6px}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{padding:10px;border:1px solid #ddd}
-th{background:#2e7d32;color:#fff;position:sticky;top:0}
-.desktop{display:none}
-@media(min-width:900px){
-#map{height:100vh;position:sticky;top:0}
-.layout{display:grid;grid-template-columns:55% 45%}
-.wrap{padding:0}
-.right{padding:20px;overflow:auto;height:100vh}
-.cards{display:none}
-.desktop{display:block}
-}
-</style></head><body>
-<div class="layout">
-<div id="map"></div>
-<div class="right"><div class="wrap">
+
 <div class="info">
-<h2>🌱 Vùng sản xuất Rau VietGAP</h2>
-<div>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div>
-<div class="stats">
-<div class=s><b>114</b><br>Nông hộ</div>
-<div class=s><b>96,007 m²</b><br>Diện tích</div>
-<div class=s><b>An Phú</b><br>Chúc Sơn</div>
+
+<div><span>Số hộ</span><b>114</b></div>
+
+<div><span>Tổng diện tích</span><b>96.007 m²</b></div>
+
+<div><span>Địa điểm</span><b>Chúc Sơn</b></div>
+
 </div>
-<input id=q placeholder="🔍 Tìm kiếm hộ hoặc diện tích...">
-<div id=count></div>
-<div class=cards id=mobile><div class="card"><div class="top"><b>1. Lê Chí Thân</b><span>573 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>2. Nguyễn Chí Nhâm</b><span>1,343 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>3. Trịnh Hữu Chiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>4. Lê Thị Hạnh</b><span>772 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>5. Nguyễn Chí Hợi (Dung)</b><span>264 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>6. Đào Xuân Ánh</b><span>744 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>7. Đào Duy Thành</b><span>848 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>8. Trịnh Hữu Sơn (hiên)</b><span>611 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>9. Trịnh Hữu Uyên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>10. Trịnh Hữu Tuấn</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>11. Đào Thị Vi</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>12. Lê Thị Lý ( Bạo)</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>13. Nguyễn Thị Huân</b><span>522 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>14. Đào Xuân Công</b><span>624 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>15. Trịnh Hữu Khanh</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>16. Đào Xuân Tý</b><span>388 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>17. Nguyễn Chí Đắc</b><span>456 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>18. Nguyễn Chí Sơn (hà)</b><span>407 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>19. Đào Xuân Anh</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>20. Nguyễn Chí Sỹ</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>21. Nguyễn Kim Tài</b><span>458 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>22. Nguyễn Chí Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>23. Đào Xuân Tú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>24. Đào Xuân Lân</b><span>834 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>25. Đỗ Thị Thuỷ</b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>26. Đào Xuân Phương</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>27. Đào Xuân Hữu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>28. Đào Xuân Khiên</b><span>2,880 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>29. Đào Xuân Huỳnh (Thắng)</b><span>576 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>30. Nguyễn Chí Tiến</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>31. Đào Xuân Hải</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>32. Lê Chí Trụ</b><span>412 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>33. Nguyễn Chí Phú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>34. Trịnh Hữu Nhạ</b><span>335 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>35. Nguyễn Chí Sơn (luyến)</b><span>734 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>36. Đặng Đình Chiến</b><span>747 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>37. Nguyễn Chí Khoa ( Chiêm)</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>38. Nguyễn Chí Hiền</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>39. Lê Thị Lơ</b><span>797 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>40. Nguyễn Chí Mão</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>41. Đào Xuân Kinh</b><span>1,104 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>42. Trịnh Hữu Cầu</b><span>608 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>43. Đặng Đình Thuyết</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>44. Nguyễn Chí An (Thảo)</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>45. Lê Thị Na</b><span>1,248 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>46. Nguyễn Chí Giáo</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>47. Lê Thị Hợi</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>48. Đào Xuân Quỳnh</b><span>596 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>49. Nguyễn Chí Bằng</b><span>1,368 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>50. Nguyễn Chí Canh</b><span>2,952 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>51. Nguyễn Thị Viên</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>52. Nguyễn Thị Thìn</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>53. Đào Xuân Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>54. Nguyễn Chí Túc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>55. Đào Xuân Thành</b><span>588 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>56. Trịnh Hữu Quý</b><span>380 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>57. Đào Xuân Vệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>58. Đặng Thị Thiết</b><span>565 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>59. Nguyễn Chí Trường</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>60. Nguyễn Thị Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>61. Đặng Đình Bào</b><span>1,133 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>62. Đào Xuân Thiên</b><span>460 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>63. Nguyễn Chí Hùng (Thuý)</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>64. Lê Thị Sáu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>65. Đào Xuân Cận</b><span>731 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>66. Đào Xuân Dậu</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>67. Trịnh Thị Hiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>68. Đào Xuân Hảo</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>69. Lê Chí Dịch</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>70. Trịnh Xuân Trường</b><span>2,304 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>71. Trịnh Hữu Hạ</b><span>1,200 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>72. Trịnh Hữu Tuất</b><span>2,208 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>73. Trọnh Trọng Năng</b><span>203 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>74. Trịnh Thị Đồi</b><span>640 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>75. Nguyễn Thị Cúc</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>76. Nguyễn Chí Soát</b><span>846 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>77. Nguyễn Chí Khoát</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>78. Nguyễn Chí Thặng</b><span>2,016 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>79. Trịnh Hữu Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>80. Trịnh Hữu Thức </b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>81. Nguyễn Chí Cảnh</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>82. Lê Thị Lên</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>83. Nguyễn Thị Chỉnh</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>84. Trịnh Hữu Phương</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>85. Nguyễn Chí Xuân</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>86. Lê Chí Quý</b><span>940 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>87. Đặng Đình Đoan</b><span>2,160 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>88. Lê Chí Chúc</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>89. Đặng Đình Tạo</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>90. Lê Chí Bản</b><span>3,008 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>91. Đào Thị Hoạt</b><span>724 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>92. Lê Chí Hồng</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>93. Đặng Hải Hoàn (Lan)</b><span>728 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>94. Lê Chí Sùng</b><span>552 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>95. Lê Chí Giang</b><span>506 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>96. Trịnh Hữu Nhu</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>97. Đặng Đình Du</b><span>648 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>98. Lê Chí Viên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>99. Nguyễn Chí Tuệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>100. Lê Chí Phúc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>101. Lê Chí Sơn ( Thao)</b><span>1,476 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>102. Đào Thị Mến</b><span>447 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>103. Lê Chí Luân</b><span>936 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>104. Lê Chí Hội</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>105. Lê Chí Hợi</b><span>804 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>106. Lê Chí Trường</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>107. Trịnh Thị Thạo</b><span>900 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>108. Trịnh Thị Nhẫn</b><span>1,872 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>109. Trịnh Hữu Thới</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>110. Trịnh Hữu Thuận</b><span>750 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>111. Đào Xuân Trường</b><span>2,448 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>112. Lê Chí Hiên</b><span>600 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>113. Nguyễn Chí Quý</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>114. Đào Xuân Tùng</b><span>449 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div></div>
-<div class=desktop><table><thead><tr><th>STT</th><th>Hộ</th><th>Diện tích</th><th>Xứ đồng</th></tr></thead><tbody id=tb><tr><td>1</td><td>Lê Chí Thân</td><td>573 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>2</td><td>Nguyễn Chí Nhâm</td><td>1,343 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>3</td><td>Trịnh Hữu Chiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>4</td><td>Lê Thị Hạnh</td><td>772 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>5</td><td>Nguyễn Chí Hợi (Dung)</td><td>264 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>6</td><td>Đào Xuân Ánh</td><td>744 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>7</td><td>Đào Duy Thành</td><td>848 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>8</td><td>Trịnh Hữu Sơn (hiên)</td><td>611 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>9</td><td>Trịnh Hữu Uyên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>10</td><td>Trịnh Hữu Tuấn</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>11</td><td>Đào Thị Vi</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>12</td><td>Lê Thị Lý ( Bạo)</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>13</td><td>Nguyễn Thị Huân</td><td>522 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>14</td><td>Đào Xuân Công</td><td>624 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>15</td><td>Trịnh Hữu Khanh</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>16</td><td>Đào Xuân Tý</td><td>388 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>17</td><td>Nguyễn Chí Đắc</td><td>456 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>18</td><td>Nguyễn Chí Sơn (hà)</td><td>407 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>19</td><td>Đào Xuân Anh</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>20</td><td>Nguyễn Chí Sỹ</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>21</td><td>Nguyễn Kim Tài</td><td>458 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>22</td><td>Nguyễn Chí Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>23</td><td>Đào Xuân Tú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>24</td><td>Đào Xuân Lân</td><td>834 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>25</td><td>Đỗ Thị Thuỷ</td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>26</td><td>Đào Xuân Phương</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>27</td><td>Đào Xuân Hữu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>28</td><td>Đào Xuân Khiên</td><td>2,880 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>29</td><td>Đào Xuân Huỳnh (Thắng)</td><td>576 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>30</td><td>Nguyễn Chí Tiến</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>31</td><td>Đào Xuân Hải</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>32</td><td>Lê Chí Trụ</td><td>412 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>33</td><td>Nguyễn Chí Phú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>34</td><td>Trịnh Hữu Nhạ</td><td>335 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>35</td><td>Nguyễn Chí Sơn (luyến)</td><td>734 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>36</td><td>Đặng Đình Chiến</td><td>747 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>37</td><td>Nguyễn Chí Khoa ( Chiêm)</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>38</td><td>Nguyễn Chí Hiền</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>39</td><td>Lê Thị Lơ</td><td>797 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>40</td><td>Nguyễn Chí Mão</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>41</td><td>Đào Xuân Kinh</td><td>1,104 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>42</td><td>Trịnh Hữu Cầu</td><td>608 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>43</td><td>Đặng Đình Thuyết</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>44</td><td>Nguyễn Chí An (Thảo)</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>45</td><td>Lê Thị Na</td><td>1,248 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>46</td><td>Nguyễn Chí Giáo</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>47</td><td>Lê Thị Hợi</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>48</td><td>Đào Xuân Quỳnh</td><td>596 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>49</td><td>Nguyễn Chí Bằng</td><td>1,368 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>50</td><td>Nguyễn Chí Canh</td><td>2,952 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>51</td><td>Nguyễn Thị Viên</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>52</td><td>Nguyễn Thị Thìn</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>53</td><td>Đào Xuân Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>54</td><td>Nguyễn Chí Túc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>55</td><td>Đào Xuân Thành</td><td>588 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>56</td><td>Trịnh Hữu Quý</td><td>380 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>57</td><td>Đào Xuân Vệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>58</td><td>Đặng Thị Thiết</td><td>565 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>59</td><td>Nguyễn Chí Trường</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>60</td><td>Nguyễn Thị Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>61</td><td>Đặng Đình Bào</td><td>1,133 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>62</td><td>Đào Xuân Thiên</td><td>460 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>63</td><td>Nguyễn Chí Hùng (Thuý)</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>64</td><td>Lê Thị Sáu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>65</td><td>Đào Xuân Cận</td><td>731 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>66</td><td>Đào Xuân Dậu</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>67</td><td>Trịnh Thị Hiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>68</td><td>Đào Xuân Hảo</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>69</td><td>Lê Chí Dịch</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>70</td><td>Trịnh Xuân Trường</td><td>2,304 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>71</td><td>Trịnh Hữu Hạ</td><td>1,200 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>72</td><td>Trịnh Hữu Tuất</td><td>2,208 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>73</td><td>Trọnh Trọng Năng</td><td>203 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>74</td><td>Trịnh Thị Đồi</td><td>640 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>75</td><td>Nguyễn Thị Cúc</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>76</td><td>Nguyễn Chí Soát</td><td>846 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>77</td><td>Nguyễn Chí Khoát</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>78</td><td>Nguyễn Chí Thặng</td><td>2,016 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>79</td><td>Trịnh Hữu Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>80</td><td>Trịnh Hữu Thức </td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>81</td><td>Nguyễn Chí Cảnh</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>82</td><td>Lê Thị Lên</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>83</td><td>Nguyễn Thị Chỉnh</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>84</td><td>Trịnh Hữu Phương</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>85</td><td>Nguyễn Chí Xuân</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>86</td><td>Lê Chí Quý</td><td>940 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>87</td><td>Đặng Đình Đoan</td><td>2,160 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>88</td><td>Lê Chí Chúc</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>89</td><td>Đặng Đình Tạo</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>90</td><td>Lê Chí Bản</td><td>3,008 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>91</td><td>Đào Thị Hoạt</td><td>724 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>92</td><td>Lê Chí Hồng</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>93</td><td>Đặng Hải Hoàn (Lan)</td><td>728 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>94</td><td>Lê Chí Sùng</td><td>552 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>95</td><td>Lê Chí Giang</td><td>506 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>96</td><td>Trịnh Hữu Nhu</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>97</td><td>Đặng Đình Du</td><td>648 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>98</td><td>Lê Chí Viên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>99</td><td>Nguyễn Chí Tuệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>100</td><td>Lê Chí Phúc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>101</td><td>Lê Chí Sơn ( Thao)</td><td>1,476 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>102</td><td>Đào Thị Mến</td><td>447 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>103</td><td>Lê Chí Luân</td><td>936 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>104</td><td>Lê Chí Hội</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>105</td><td>Lê Chí Hợi</td><td>804 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>106</td><td>Lê Chí Trường</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>107</td><td>Trịnh Thị Thạo</td><td>900 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>108</td><td>Trịnh Thị Nhẫn</td><td>1,872 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>109</td><td>Trịnh Hữu Thới</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>110</td><td>Trịnh Hữu Thuận</td><td>750 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>111</td><td>Đào Xuân Trường</td><td>2,448 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>112</td><td>Lê Chí Hiên</td><td>600 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>113</td><td>Nguyễn Chí Quý</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>114</td><td>Đào Xuân Tùng</td><td>449 m²</td><td>An Phú - Chúc Sơn</td></tr></tbody></table></div>
-</div></div></div></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const map=L.map('map');
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}').addTo(map);
-let pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-let p=L.polygon(pts,{color:'green',fillOpacity:.35}).addTo(map);
-map.fitBounds(p.getBounds());
-p.bindPopup("<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn").openPopup();
-const q=document.getElementById('q');
-function filter(){
-let v=q.value.toLowerCase(),n=0;
-document.querySelectorAll('.card').forEach(c=>{let ok=c.innerText.toLowerCase().includes(v);c.style.display=ok?'':'none';if(ok)n++;});
-document.querySelectorAll('#tb tr').forEach(r=>{let ok=r.innerText.toLowerCase().includes(v);r.style.display=ok?'':'none';});
-count.innerHTML='Hiển thị '+n+' / 114 nông hộ';
-}
-filter();q.oninput=filter;
-</script></body></html><!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Vùng sản xuất Rau VietGAP</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<style>
-body{margin:0;font-family:Arial;background:#eef3ef}
-#map{height:45vh}
-.wrap{max-width:1300px;margin:auto;padding:16px}
-.info{background:#fff;margin-top:-30px;position:relative;border-radius:16px;padding:18px;box-shadow:0 4px 14px #0002}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.s{background:#eaf8ee;padding:10px;border-radius:10px;text-align:center}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #bbb;margin:16px 0}
-.cards{display:block}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px #0001}
-.top{display:flex;justify-content:space-between;gap:10px}
-.sub{color:#666;margin-top:6px}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{padding:10px;border:1px solid #ddd}
-th{background:#2e7d32;color:#fff;position:sticky;top:0}
-.desktop{display:none}
-@media(min-width:900px){
-#map{height:100vh;position:sticky;top:0}
-.layout{display:grid;grid-template-columns:55% 45%}
-.wrap{padding:0}
-.right{padding:20px;overflow:auto;height:100vh}
-.cards{display:none}
-.desktop{display:block}
-}
-</style></head><body>
-<div class="layout">
-<div id="map"></div>
-<div class="right"><div class="wrap">
-<div class="info">
-<h2>🌱 Vùng sản xuất Rau VietGAP</h2>
-<div>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div>
-<div class="stats">
-<div class=s><b>114</b><br>Nông hộ</div>
-<div class=s><b>96,007 m²</b><br>Diện tích</div>
-<div class=s><b>An Phú</b><br>Chúc Sơn</div>
+
+<div class="search">
+
+<input id="searchInput"
+placeholder="Tìm hộ sản xuất...">
+
 </div>
-<input id=q placeholder="🔍 Tìm kiếm hộ hoặc diện tích...">
-<div id=count></div>
-<div class=cards id=mobile><div class="card"><div class="top"><b>1. Lê Chí Thân</b><span>573 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>2. Nguyễn Chí Nhâm</b><span>1,343 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>3. Trịnh Hữu Chiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>4. Lê Thị Hạnh</b><span>772 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>5. Nguyễn Chí Hợi (Dung)</b><span>264 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>6. Đào Xuân Ánh</b><span>744 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>7. Đào Duy Thành</b><span>848 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>8. Trịnh Hữu Sơn (hiên)</b><span>611 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>9. Trịnh Hữu Uyên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>10. Trịnh Hữu Tuấn</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>11. Đào Thị Vi</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>12. Lê Thị Lý ( Bạo)</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>13. Nguyễn Thị Huân</b><span>522 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>14. Đào Xuân Công</b><span>624 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>15. Trịnh Hữu Khanh</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>16. Đào Xuân Tý</b><span>388 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>17. Nguyễn Chí Đắc</b><span>456 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>18. Nguyễn Chí Sơn (hà)</b><span>407 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>19. Đào Xuân Anh</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>20. Nguyễn Chí Sỹ</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>21. Nguyễn Kim Tài</b><span>458 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>22. Nguyễn Chí Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>23. Đào Xuân Tú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>24. Đào Xuân Lân</b><span>834 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>25. Đỗ Thị Thuỷ</b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>26. Đào Xuân Phương</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>27. Đào Xuân Hữu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>28. Đào Xuân Khiên</b><span>2,880 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>29. Đào Xuân Huỳnh (Thắng)</b><span>576 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>30. Nguyễn Chí Tiến</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>31. Đào Xuân Hải</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>32. Lê Chí Trụ</b><span>412 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>33. Nguyễn Chí Phú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>34. Trịnh Hữu Nhạ</b><span>335 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>35. Nguyễn Chí Sơn (luyến)</b><span>734 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>36. Đặng Đình Chiến</b><span>747 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>37. Nguyễn Chí Khoa ( Chiêm)</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>38. Nguyễn Chí Hiền</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>39. Lê Thị Lơ</b><span>797 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>40. Nguyễn Chí Mão</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>41. Đào Xuân Kinh</b><span>1,104 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>42. Trịnh Hữu Cầu</b><span>608 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>43. Đặng Đình Thuyết</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>44. Nguyễn Chí An (Thảo)</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>45. Lê Thị Na</b><span>1,248 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>46. Nguyễn Chí Giáo</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>47. Lê Thị Hợi</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>48. Đào Xuân Quỳnh</b><span>596 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>49. Nguyễn Chí Bằng</b><span>1,368 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>50. Nguyễn Chí Canh</b><span>2,952 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>51. Nguyễn Thị Viên</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>52. Nguyễn Thị Thìn</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>53. Đào Xuân Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>54. Nguyễn Chí Túc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>55. Đào Xuân Thành</b><span>588 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>56. Trịnh Hữu Quý</b><span>380 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>57. Đào Xuân Vệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>58. Đặng Thị Thiết</b><span>565 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>59. Nguyễn Chí Trường</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>60. Nguyễn Thị Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>61. Đặng Đình Bào</b><span>1,133 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>62. Đào Xuân Thiên</b><span>460 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>63. Nguyễn Chí Hùng (Thuý)</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>64. Lê Thị Sáu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>65. Đào Xuân Cận</b><span>731 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>66. Đào Xuân Dậu</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>67. Trịnh Thị Hiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>68. Đào Xuân Hảo</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>69. Lê Chí Dịch</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>70. Trịnh Xuân Trường</b><span>2,304 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>71. Trịnh Hữu Hạ</b><span>1,200 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>72. Trịnh Hữu Tuất</b><span>2,208 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>73. Trọnh Trọng Năng</b><span>203 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>74. Trịnh Thị Đồi</b><span>640 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>75. Nguyễn Thị Cúc</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>76. Nguyễn Chí Soát</b><span>846 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>77. Nguyễn Chí Khoát</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>78. Nguyễn Chí Thặng</b><span>2,016 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>79. Trịnh Hữu Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>80. Trịnh Hữu Thức </b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>81. Nguyễn Chí Cảnh</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>82. Lê Thị Lên</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>83. Nguyễn Thị Chỉnh</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>84. Trịnh Hữu Phương</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>85. Nguyễn Chí Xuân</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>86. Lê Chí Quý</b><span>940 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>87. Đặng Đình Đoan</b><span>2,160 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>88. Lê Chí Chúc</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>89. Đặng Đình Tạo</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>90. Lê Chí Bản</b><span>3,008 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>91. Đào Thị Hoạt</b><span>724 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>92. Lê Chí Hồng</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>93. Đặng Hải Hoàn (Lan)</b><span>728 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>94. Lê Chí Sùng</b><span>552 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>95. Lê Chí Giang</b><span>506 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>96. Trịnh Hữu Nhu</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>97. Đặng Đình Du</b><span>648 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>98. Lê Chí Viên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>99. Nguyễn Chí Tuệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>100. Lê Chí Phúc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>101. Lê Chí Sơn ( Thao)</b><span>1,476 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>102. Đào Thị Mến</b><span>447 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>103. Lê Chí Luân</b><span>936 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>104. Lê Chí Hội</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>105. Lê Chí Hợi</b><span>804 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>106. Lê Chí Trường</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>107. Trịnh Thị Thạo</b><span>900 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>108. Trịnh Thị Nhẫn</b><span>1,872 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>109. Trịnh Hữu Thới</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>110. Trịnh Hữu Thuận</b><span>750 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>111. Đào Xuân Trường</b><span>2,448 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>112. Lê Chí Hiên</b><span>600 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>113. Nguyễn Chí Quý</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>114. Đào Xuân Tùng</b><span>449 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div></div>
-<div class=desktop><table><thead><tr><th>STT</th><th>Hộ</th><th>Diện tích</th><th>Xứ đồng</th></tr></thead><tbody id=tb><tr><td>1</td><td>Lê Chí Thân</td><td>573 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>2</td><td>Nguyễn Chí Nhâm</td><td>1,343 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>3</td><td>Trịnh Hữu Chiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>4</td><td>Lê Thị Hạnh</td><td>772 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>5</td><td>Nguyễn Chí Hợi (Dung)</td><td>264 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>6</td><td>Đào Xuân Ánh</td><td>744 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>7</td><td>Đào Duy Thành</td><td>848 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>8</td><td>Trịnh Hữu Sơn (hiên)</td><td>611 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>9</td><td>Trịnh Hữu Uyên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>10</td><td>Trịnh Hữu Tuấn</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>11</td><td>Đào Thị Vi</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>12</td><td>Lê Thị Lý ( Bạo)</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>13</td><td>Nguyễn Thị Huân</td><td>522 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>14</td><td>Đào Xuân Công</td><td>624 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>15</td><td>Trịnh Hữu Khanh</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>16</td><td>Đào Xuân Tý</td><td>388 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>17</td><td>Nguyễn Chí Đắc</td><td>456 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>18</td><td>Nguyễn Chí Sơn (hà)</td><td>407 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>19</td><td>Đào Xuân Anh</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>20</td><td>Nguyễn Chí Sỹ</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>21</td><td>Nguyễn Kim Tài</td><td>458 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>22</td><td>Nguyễn Chí Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>23</td><td>Đào Xuân Tú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>24</td><td>Đào Xuân Lân</td><td>834 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>25</td><td>Đỗ Thị Thuỷ</td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>26</td><td>Đào Xuân Phương</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>27</td><td>Đào Xuân Hữu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>28</td><td>Đào Xuân Khiên</td><td>2,880 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>29</td><td>Đào Xuân Huỳnh (Thắng)</td><td>576 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>30</td><td>Nguyễn Chí Tiến</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>31</td><td>Đào Xuân Hải</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>32</td><td>Lê Chí Trụ</td><td>412 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>33</td><td>Nguyễn Chí Phú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>34</td><td>Trịnh Hữu Nhạ</td><td>335 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>35</td><td>Nguyễn Chí Sơn (luyến)</td><td>734 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>36</td><td>Đặng Đình Chiến</td><td>747 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>37</td><td>Nguyễn Chí Khoa ( Chiêm)</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>38</td><td>Nguyễn Chí Hiền</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>39</td><td>Lê Thị Lơ</td><td>797 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>40</td><td>Nguyễn Chí Mão</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>41</td><td>Đào Xuân Kinh</td><td>1,104 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>42</td><td>Trịnh Hữu Cầu</td><td>608 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>43</td><td>Đặng Đình Thuyết</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>44</td><td>Nguyễn Chí An (Thảo)</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>45</td><td>Lê Thị Na</td><td>1,248 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>46</td><td>Nguyễn Chí Giáo</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>47</td><td>Lê Thị Hợi</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>48</td><td>Đào Xuân Quỳnh</td><td>596 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>49</td><td>Nguyễn Chí Bằng</td><td>1,368 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>50</td><td>Nguyễn Chí Canh</td><td>2,952 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>51</td><td>Nguyễn Thị Viên</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>52</td><td>Nguyễn Thị Thìn</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>53</td><td>Đào Xuân Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>54</td><td>Nguyễn Chí Túc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>55</td><td>Đào Xuân Thành</td><td>588 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>56</td><td>Trịnh Hữu Quý</td><td>380 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>57</td><td>Đào Xuân Vệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>58</td><td>Đặng Thị Thiết</td><td>565 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>59</td><td>Nguyễn Chí Trường</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>60</td><td>Nguyễn Thị Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>61</td><td>Đặng Đình Bào</td><td>1,133 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>62</td><td>Đào Xuân Thiên</td><td>460 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>63</td><td>Nguyễn Chí Hùng (Thuý)</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>64</td><td>Lê Thị Sáu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>65</td><td>Đào Xuân Cận</td><td>731 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>66</td><td>Đào Xuân Dậu</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>67</td><td>Trịnh Thị Hiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>68</td><td>Đào Xuân Hảo</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>69</td><td>Lê Chí Dịch</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>70</td><td>Trịnh Xuân Trường</td><td>2,304 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>71</td><td>Trịnh Hữu Hạ</td><td>1,200 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>72</td><td>Trịnh Hữu Tuất</td><td>2,208 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>73</td><td>Trọnh Trọng Năng</td><td>203 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>74</td><td>Trịnh Thị Đồi</td><td>640 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>75</td><td>Nguyễn Thị Cúc</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>76</td><td>Nguyễn Chí Soát</td><td>846 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>77</td><td>Nguyễn Chí Khoát</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>78</td><td>Nguyễn Chí Thặng</td><td>2,016 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>79</td><td>Trịnh Hữu Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>80</td><td>Trịnh Hữu Thức </td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>81</td><td>Nguyễn Chí Cảnh</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>82</td><td>Lê Thị Lên</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>83</td><td>Nguyễn Thị Chỉnh</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>84</td><td>Trịnh Hữu Phương</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>85</td><td>Nguyễn Chí Xuân</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>86</td><td>Lê Chí Quý</td><td>940 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>87</td><td>Đặng Đình Đoan</td><td>2,160 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>88</td><td>Lê Chí Chúc</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>89</td><td>Đặng Đình Tạo</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>90</td><td>Lê Chí Bản</td><td>3,008 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>91</td><td>Đào Thị Hoạt</td><td>724 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>92</td><td>Lê Chí Hồng</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>93</td><td>Đặng Hải Hoàn (Lan)</td><td>728 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>94</td><td>Lê Chí Sùng</td><td>552 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>95</td><td>Lê Chí Giang</td><td>506 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>96</td><td>Trịnh Hữu Nhu</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>97</td><td>Đặng Đình Du</td><td>648 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>98</td><td>Lê Chí Viên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>99</td><td>Nguyễn Chí Tuệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>100</td><td>Lê Chí Phúc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>101</td><td>Lê Chí Sơn ( Thao)</td><td>1,476 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>102</td><td>Đào Thị Mến</td><td>447 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>103</td><td>Lê Chí Luân</td><td>936 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>104</td><td>Lê Chí Hội</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>105</td><td>Lê Chí Hợi</td><td>804 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>106</td><td>Lê Chí Trường</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>107</td><td>Trịnh Thị Thạo</td><td>900 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>108</td><td>Trịnh Thị Nhẫn</td><td>1,872 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>109</td><td>Trịnh Hữu Thới</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>110</td><td>Trịnh Hữu Thuận</td><td>750 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>111</td><td>Đào Xuân Trường</td><td>2,448 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>112</td><td>Lê Chí Hiên</td><td>600 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>113</td><td>Nguyễn Chí Quý</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>114</td><td>Đào Xuân Tùng</td><td>449 m²</td><td>An Phú - Chúc Sơn</td></tr></tbody></table></div>
-</div></div></div></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const map=L.map('map');
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}').addTo(map);
-let pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-let p=L.polygon(pts,{color:'green',fillOpacity:.35}).addTo(map);
-map.fitBounds(p.getBounds());
-p.bindPopup("<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn").openPopup();
-const q=document.getElementById('q');
-function filter(){
-let v=q.value.toLowerCase(),n=0;
-document.querySelectorAll('.card').forEach(c=>{let ok=c.innerText.toLowerCase().includes(v);c.style.display=ok?'':'none';if(ok)n++;});
-document.querySelectorAll('#tb tr').forEach(r=>{let ok=r.innerText.toLowerCase().includes(v);r.style.display=ok?'':'none';});
-count.innerHTML='Hiển thị '+n+' / 114 nông hộ';
-}
-filter();q.oninput=filter;
-</script></body></html><!doctype html><html lang=vi><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Vùng sản xuất Rau VietGAP</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<style>
-body{margin:0;font-family:Arial;background:#eef3ef}
-#map{height:45vh}
-.wrap{max-width:1300px;margin:auto;padding:16px}
-.info{background:#fff;margin-top:-30px;position:relative;border-radius:16px;padding:18px;box-shadow:0 4px 14px #0002}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.s{background:#eaf8ee;padding:10px;border-radius:10px;text-align:center}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #bbb;margin:16px 0}
-.cards{display:block}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px #0001}
-.top{display:flex;justify-content:space-between;gap:10px}
-.sub{color:#666;margin-top:6px}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{padding:10px;border:1px solid #ddd}
-th{background:#2e7d32;color:#fff;position:sticky;top:0}
-.desktop{display:none}
-@media(min-width:900px){
-#map{height:100vh;position:sticky;top:0}
-.layout{display:grid;grid-template-columns:55% 45%}
-.wrap{padding:0}
-.right{padding:20px;overflow:auto;height:100vh}
-.cards{display:none}
-.desktop{display:block}
-}
-</style></head><body>
-<div class="layout">
-<div id="map"></div>
-<div class="right"><div class="wrap">
-<div class="info">
-<h2>🌱 Vùng sản xuất Rau VietGAP</h2>
-<div>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div>
-<div class="stats">
-<div class=s><b>114</b><br>Nông hộ</div>
-<div class=s><b>96,007 m²</b><br>Diện tích</div>
-<div class=s><b>An Phú</b><br>Chúc Sơn</div>
+
+<div class="sheet" id="sheet">
+
+<div class="handle" id="handle"></div>
+
+<div class="title">
+
+<span>Danh sách hộ sản xuất</span>
+
+<b id="count">114 hộ</b>
+
 </div>
-<input id=q placeholder="🔍 Tìm kiếm hộ hoặc diện tích...">
-<div id=count></div>
-<div class=cards id=mobile><div class="card"><div class="top"><b>1. Lê Chí Thân</b><span>573 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>2. Nguyễn Chí Nhâm</b><span>1,343 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>3. Trịnh Hữu Chiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>4. Lê Thị Hạnh</b><span>772 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>5. Nguyễn Chí Hợi (Dung)</b><span>264 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>6. Đào Xuân Ánh</b><span>744 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>7. Đào Duy Thành</b><span>848 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>8. Trịnh Hữu Sơn (hiên)</b><span>611 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>9. Trịnh Hữu Uyên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>10. Trịnh Hữu Tuấn</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>11. Đào Thị Vi</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>12. Lê Thị Lý ( Bạo)</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>13. Nguyễn Thị Huân</b><span>522 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>14. Đào Xuân Công</b><span>624 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>15. Trịnh Hữu Khanh</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>16. Đào Xuân Tý</b><span>388 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>17. Nguyễn Chí Đắc</b><span>456 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>18. Nguyễn Chí Sơn (hà)</b><span>407 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>19. Đào Xuân Anh</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>20. Nguyễn Chí Sỹ</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>21. Nguyễn Kim Tài</b><span>458 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>22. Nguyễn Chí Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>23. Đào Xuân Tú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>24. Đào Xuân Lân</b><span>834 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>25. Đỗ Thị Thuỷ</b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>26. Đào Xuân Phương</b><span>390 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>27. Đào Xuân Hữu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>28. Đào Xuân Khiên</b><span>2,880 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>29. Đào Xuân Huỳnh (Thắng)</b><span>576 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>30. Nguyễn Chí Tiến</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>31. Đào Xuân Hải</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>32. Lê Chí Trụ</b><span>412 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>33. Nguyễn Chí Phú</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>34. Trịnh Hữu Nhạ</b><span>335 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>35. Nguyễn Chí Sơn (luyến)</b><span>734 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>36. Đặng Đình Chiến</b><span>747 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>37. Nguyễn Chí Khoa ( Chiêm)</b><span>868 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>38. Nguyễn Chí Hiền</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>39. Lê Thị Lơ</b><span>797 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>40. Nguyễn Chí Mão</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>41. Đào Xuân Kinh</b><span>1,104 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>42. Trịnh Hữu Cầu</b><span>608 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>43. Đặng Đình Thuyết</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>44. Nguyễn Chí An (Thảo)</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>45. Lê Thị Na</b><span>1,248 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>46. Nguyễn Chí Giáo</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>47. Lê Thị Hợi</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>48. Đào Xuân Quỳnh</b><span>596 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>49. Nguyễn Chí Bằng</b><span>1,368 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>50. Nguyễn Chí Canh</b><span>2,952 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>51. Nguyễn Thị Viên</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>52. Nguyễn Thị Thìn</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>53. Đào Xuân Chiến</b><span>432 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>54. Nguyễn Chí Túc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>55. Đào Xuân Thành</b><span>588 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>56. Trịnh Hữu Quý</b><span>380 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>57. Đào Xuân Vệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>58. Đặng Thị Thiết</b><span>565 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>59. Nguyễn Chí Trường</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>60. Nguyễn Thị Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>61. Đặng Đình Bào</b><span>1,133 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>62. Đào Xuân Thiên</b><span>460 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>63. Nguyễn Chí Hùng (Thuý)</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>64. Lê Thị Sáu</b><span>450 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>65. Đào Xuân Cận</b><span>731 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>66. Đào Xuân Dậu</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>67. Trịnh Thị Hiên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>68. Đào Xuân Hảo</b><span>1,440 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>69. Lê Chí Dịch</b><span>768 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>70. Trịnh Xuân Trường</b><span>2,304 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>71. Trịnh Hữu Hạ</b><span>1,200 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>72. Trịnh Hữu Tuất</b><span>2,208 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>73. Trọnh Trọng Năng</b><span>203 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>74. Trịnh Thị Đồi</b><span>640 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>75. Nguyễn Thị Cúc</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>76. Nguyễn Chí Soát</b><span>846 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>77. Nguyễn Chí Khoát</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>78. Nguyễn Chí Thặng</b><span>2,016 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>79. Trịnh Hữu Hiền</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>80. Trịnh Hữu Thức </b><span>540 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>81. Nguyễn Chí Cảnh</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>82. Lê Thị Lên</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>83. Nguyễn Thị Chỉnh</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>84. Trịnh Hữu Phương</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>85. Nguyễn Chí Xuân</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>86. Lê Chí Quý</b><span>940 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>87. Đặng Đình Đoan</b><span>2,160 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>88. Lê Chí Chúc</b><span>864 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>89. Đặng Đình Tạo</b><span>816 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>90. Lê Chí Bản</b><span>3,008 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>91. Đào Thị Hoạt</b><span>724 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>92. Lê Chí Hồng</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>93. Đặng Hải Hoàn (Lan)</b><span>728 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>94. Lê Chí Sùng</b><span>552 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>95. Lê Chí Giang</b><span>506 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>96. Trịnh Hữu Nhu</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>97. Đặng Đình Du</b><span>648 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>98. Lê Chí Viên</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>99. Nguyễn Chí Tuệ</b><span>840 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>100. Lê Chí Phúc</b><span>720 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>101. Lê Chí Sơn ( Thao)</b><span>1,476 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>102. Đào Thị Mến</b><span>447 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>103. Lê Chí Luân</b><span>936 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>104. Lê Chí Hội</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>105. Lê Chí Hợi</b><span>804 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>106. Lê Chí Trường</b><span>2,592 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>107. Trịnh Thị Thạo</b><span>900 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>108. Trịnh Thị Nhẫn</b><span>1,872 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>109. Trịnh Hữu Thới</b><span>360 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>110. Trịnh Hữu Thuận</b><span>750 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>111. Đào Xuân Trường</b><span>2,448 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>112. Lê Chí Hiên</b><span>600 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>113. Nguyễn Chí Quý</b><span>1,656 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div><div class="card"><div class="top"><b>114. Đào Xuân Tùng</b><span>449 m²</span></div><div class="sub">An Phú - Chúc Sơn</div></div></div>
-<div class=desktop><table><thead><tr><th>STT</th><th>Hộ</th><th>Diện tích</th><th>Xứ đồng</th></tr></thead><tbody id=tb><tr><td>1</td><td>Lê Chí Thân</td><td>573 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>2</td><td>Nguyễn Chí Nhâm</td><td>1,343 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>3</td><td>Trịnh Hữu Chiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>4</td><td>Lê Thị Hạnh</td><td>772 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>5</td><td>Nguyễn Chí Hợi (Dung)</td><td>264 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>6</td><td>Đào Xuân Ánh</td><td>744 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>7</td><td>Đào Duy Thành</td><td>848 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>8</td><td>Trịnh Hữu Sơn (hiên)</td><td>611 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>9</td><td>Trịnh Hữu Uyên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>10</td><td>Trịnh Hữu Tuấn</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>11</td><td>Đào Thị Vi</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>12</td><td>Lê Thị Lý ( Bạo)</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>13</td><td>Nguyễn Thị Huân</td><td>522 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>14</td><td>Đào Xuân Công</td><td>624 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>15</td><td>Trịnh Hữu Khanh</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>16</td><td>Đào Xuân Tý</td><td>388 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>17</td><td>Nguyễn Chí Đắc</td><td>456 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>18</td><td>Nguyễn Chí Sơn (hà)</td><td>407 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>19</td><td>Đào Xuân Anh</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>20</td><td>Nguyễn Chí Sỹ</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>21</td><td>Nguyễn Kim Tài</td><td>458 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>22</td><td>Nguyễn Chí Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>23</td><td>Đào Xuân Tú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>24</td><td>Đào Xuân Lân</td><td>834 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>25</td><td>Đỗ Thị Thuỷ</td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>26</td><td>Đào Xuân Phương</td><td>390 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>27</td><td>Đào Xuân Hữu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>28</td><td>Đào Xuân Khiên</td><td>2,880 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>29</td><td>Đào Xuân Huỳnh (Thắng)</td><td>576 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>30</td><td>Nguyễn Chí Tiến</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>31</td><td>Đào Xuân Hải</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>32</td><td>Lê Chí Trụ</td><td>412 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>33</td><td>Nguyễn Chí Phú</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>34</td><td>Trịnh Hữu Nhạ</td><td>335 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>35</td><td>Nguyễn Chí Sơn (luyến)</td><td>734 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>36</td><td>Đặng Đình Chiến</td><td>747 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>37</td><td>Nguyễn Chí Khoa ( Chiêm)</td><td>868 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>38</td><td>Nguyễn Chí Hiền</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>39</td><td>Lê Thị Lơ</td><td>797 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>40</td><td>Nguyễn Chí Mão</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>41</td><td>Đào Xuân Kinh</td><td>1,104 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>42</td><td>Trịnh Hữu Cầu</td><td>608 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>43</td><td>Đặng Đình Thuyết</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>44</td><td>Nguyễn Chí An (Thảo)</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>45</td><td>Lê Thị Na</td><td>1,248 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>46</td><td>Nguyễn Chí Giáo</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>47</td><td>Lê Thị Hợi</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>48</td><td>Đào Xuân Quỳnh</td><td>596 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>49</td><td>Nguyễn Chí Bằng</td><td>1,368 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>50</td><td>Nguyễn Chí Canh</td><td>2,952 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>51</td><td>Nguyễn Thị Viên</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>52</td><td>Nguyễn Thị Thìn</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>53</td><td>Đào Xuân Chiến</td><td>432 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>54</td><td>Nguyễn Chí Túc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>55</td><td>Đào Xuân Thành</td><td>588 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>56</td><td>Trịnh Hữu Quý</td><td>380 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>57</td><td>Đào Xuân Vệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>58</td><td>Đặng Thị Thiết</td><td>565 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>59</td><td>Nguyễn Chí Trường</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>60</td><td>Nguyễn Thị Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>61</td><td>Đặng Đình Bào</td><td>1,133 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>62</td><td>Đào Xuân Thiên</td><td>460 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>63</td><td>Nguyễn Chí Hùng (Thuý)</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>64</td><td>Lê Thị Sáu</td><td>450 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>65</td><td>Đào Xuân Cận</td><td>731 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>66</td><td>Đào Xuân Dậu</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>67</td><td>Trịnh Thị Hiên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>68</td><td>Đào Xuân Hảo</td><td>1,440 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>69</td><td>Lê Chí Dịch</td><td>768 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>70</td><td>Trịnh Xuân Trường</td><td>2,304 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>71</td><td>Trịnh Hữu Hạ</td><td>1,200 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>72</td><td>Trịnh Hữu Tuất</td><td>2,208 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>73</td><td>Trọnh Trọng Năng</td><td>203 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>74</td><td>Trịnh Thị Đồi</td><td>640 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>75</td><td>Nguyễn Thị Cúc</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>76</td><td>Nguyễn Chí Soát</td><td>846 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>77</td><td>Nguyễn Chí Khoát</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>78</td><td>Nguyễn Chí Thặng</td><td>2,016 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>79</td><td>Trịnh Hữu Hiền</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>80</td><td>Trịnh Hữu Thức </td><td>540 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>81</td><td>Nguyễn Chí Cảnh</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>82</td><td>Lê Thị Lên</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>83</td><td>Nguyễn Thị Chỉnh</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>84</td><td>Trịnh Hữu Phương</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>85</td><td>Nguyễn Chí Xuân</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>86</td><td>Lê Chí Quý</td><td>940 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>87</td><td>Đặng Đình Đoan</td><td>2,160 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>88</td><td>Lê Chí Chúc</td><td>864 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>89</td><td>Đặng Đình Tạo</td><td>816 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>90</td><td>Lê Chí Bản</td><td>3,008 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>91</td><td>Đào Thị Hoạt</td><td>724 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>92</td><td>Lê Chí Hồng</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>93</td><td>Đặng Hải Hoàn (Lan)</td><td>728 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>94</td><td>Lê Chí Sùng</td><td>552 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>95</td><td>Lê Chí Giang</td><td>506 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>96</td><td>Trịnh Hữu Nhu</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>97</td><td>Đặng Đình Du</td><td>648 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>98</td><td>Lê Chí Viên</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>99</td><td>Nguyễn Chí Tuệ</td><td>840 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>100</td><td>Lê Chí Phúc</td><td>720 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>101</td><td>Lê Chí Sơn ( Thao)</td><td>1,476 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>102</td><td>Đào Thị Mến</td><td>447 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>103</td><td>Lê Chí Luân</td><td>936 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>104</td><td>Lê Chí Hội</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>105</td><td>Lê Chí Hợi</td><td>804 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>106</td><td>Lê Chí Trường</td><td>2,592 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>107</td><td>Trịnh Thị Thạo</td><td>900 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>108</td><td>Trịnh Thị Nhẫn</td><td>1,872 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>109</td><td>Trịnh Hữu Thới</td><td>360 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>110</td><td>Trịnh Hữu Thuận</td><td>750 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>111</td><td>Đào Xuân Trường</td><td>2,448 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>112</td><td>Lê Chí Hiên</td><td>600 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>113</td><td>Nguyễn Chí Quý</td><td>1,656 m²</td><td>An Phú - Chúc Sơn</td></tr><tr><td>114</td><td>Đào Xuân Tùng</td><td>449 m²</td><td>An Phú - Chúc Sơn</td></tr></tbody></table></div>
-</div></div></div></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<div class="list" id="list">
+
+<table id="table">
+
+<thead>
+
+<tr>
+
+<th>STT</th>
+
+<th>Hộ dùng nước</th>
+
+<th>Diện tích</th>
+
+<th>Xứ đồng</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tbody">
+</tbody>
+</table>
+
+</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-const map=L.map('map');
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}').addTo(map);
-let pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-let p=L.polygon(pts,{color:'green',fillOpacity:.35}).addTo(map);
-map.fitBounds(p.getBounds());
-p.bindPopup("<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn").openPopup();
-const q=document.getElementById('q');
-function filter(){
-let v=q.value.toLowerCase(),n=0;
-document.querySelectorAll('.card').forEach(c=>{let ok=c.innerText.toLowerCase().includes(v);c.style.display=ok?'':'none';if(ok)n++;});
-document.querySelectorAll('#tb tr').forEach(r=>{let ok=r.innerText.toLowerCase().includes(v);r.style.display=ok?'':'none';});
-count.innerHTML='Hiển thị '+n+' / 114 nông hộ';
+
+const map = L.map('map',{
+zoomControl:true
+}).setView([20.9141,105.7183],17);
+
+const esri=L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+{
+maxZoom:20,
+attribution:'Esri'
+});
+
+esri.addTo(map);
+
+const labels=L.tileLayer(
+'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+{
+maxZoom:20
+});
+
+labels.addTo(map);
+
+const polygonCoords=[
+
+[20.913361,105.720369],
+
+[20.915914,105.718817],
+
+[20.915481,105.715700],
+
+[20.912075,105.718131]
+
+];
+
+const polygon=L.polygon(polygonCoords,{
+
+color:"#16a34a",
+
+weight:3,
+
+fillColor:"#22c55e",
+
+fillOpacity:.35
+
+}).addTo(map);
+
+polygon.bindPopup(`
+
+<b>Vùng sản xuất Rau VietGAP</b><br>
+
+HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn
+
+`).openPopup();
+
+map.fitBounds(polygon.getBounds(),{
+
+padding:[40,40]
+
+});
+
+document.getElementById("zoomPolygon").onclick=()=>{
+
+map.fitBounds(polygon.getBounds(),{
+
+padding:[40,40]
+
+});
+
+};
+
+document.getElementById("locateBtn").onclick=function(){
+
+if(!navigator.geolocation){
+
+alert("Thiết bị không hỗ trợ định vị");
+
+return;
+
 }
-filter();q.oninput=filter;
-</script></body></html>
+
+navigator.geolocation.getCurrentPosition(function(pos){
+
+const lat=pos.coords.latitude;
+
+const lng=pos.coords.longitude;
+
+L.marker([lat,lng]).addTo(map);
+
+map.setView([lat,lng],18);
+
+},function(){
+
+alert("Không lấy được vị trí");
+
+});
+
+};
+
+const sheet=document.getElementById("sheet");
+
+const handle=document.getElementById("handle");
+
+handle.onclick=function(){
+
+sheet.classList.toggle("expand");
+
+};
+
+let startY=0;
+
+let endY=0;
+
+handle.addEventListener("touchstart",e=>{
+
+startY=e.touches[0].clientY;
+
+});
+
+handle.addEventListener("touchend",e=>{
+
+endY=e.changedTouches[0].clientY;
+
+if(endY<startY-30){
+
+sheet.classList.add("expand");
+
+}
+
+if(endY>startY+30){
+
+sheet.classList.remove("expand");
+
+}
+
+});
+
+const households=[{stt:1,name:'Lê Chí Thân',area:573,field:'An Phú - Chúc Sơn'},
+{stt:2,name:'Nguyễn Chí Nhâm',area:1343,field:'An Phú - Chúc Sơn'},
+{stt:3,name:'Trịnh Hữu Chiên',area:360,field:'An Phú - Chúc Sơn'},
+{stt:4,name:'Lê Thị Hạnh',area:772,field:'An Phú - Chúc Sơn'},
+{stt:5,name:'Nguyễn Chí Hợi (Dung)',area:264,field:'An Phú - Chúc Sơn'},
+{stt:6,name:'Đào Xuân Ánh',area:744,field:'An Phú - Chúc Sơn'},
+{stt:7,name:'Đào Duy Thành',area:848,field:'An Phú - Chúc Sơn'},
+{stt:8,name:'Trịnh Hữu Sơn (Hiên)',area:611,field:'An Phú - Chúc Sơn'},
+{stt:9,name:'Trịnh Hữu Uyên',area:360,field:'An Phú - Chúc Sơn'},
+{stt:10,name:'Trịnh Hữu Tuấn',area:390,field:'An Phú - Chúc Sơn'},
+{stt:11,name:'Đào Thị Vi',area:432,field:'An Phú - Chúc Sơn'},
+{stt:12,name:'Lê Thị Lý (Bạo)',area:864,field:'An Phú - Chúc Sơn'},
+{stt:13,name:'Nguyễn Thị Huân',area:522,field:'An Phú - Chúc Sơn'},
+{stt:14,name:'Đào Xuân Công',area:624,field:'An Phú - Chúc Sơn'},
+{stt:15,name:'Trịnh Hữu Khanh',area:868,field:'An Phú - Chúc Sơn'},
+{stt:16,name:'Đào Xuân Tý',area:388,field:'An Phú - Chúc Sơn'},
+{stt:17,name:'Nguyễn Chí Đắc',area:456,field:'An Phú - Chúc Sơn'},
+{stt:18,name:'Nguyễn Chí Sơn (Hà)',area:407,field:'An Phú - Chúc Sơn'},
+{stt:19,name:'Đào Xuân Anh',area:816,field:'An Phú - Chúc Sơn'},
+{stt:20,name:'Nguyễn Chí Sỹ',area:390,field:'An Phú - Chúc Sơn'},
+{stt:21,name:'Nguyễn Kim Tài',area:458,field:'An Phú - Chúc Sơn'},
+{stt:22,name:'Nguyễn Chí Chiến',area:432,field:'An Phú - Chúc Sơn'},
+{stt:23,name:'Đào Xuân Tú',area:720,field:'An Phú - Chúc Sơn'},
+{stt:24,name:'Đào Xuân Lân',area:834,field:'An Phú - Chúc Sơn'},
+{stt:25,name:'Đỗ Thị Thuỷ',area:540,field:'An Phú - Chúc Sơn'},
+{stt:26,name:'Đào Xuân Phương',area:390,field:'An Phú - Chúc Sơn'},
+{stt:27,name:'Đào Xuân Hữu',area:450,field:'An Phú - Chúc Sơn'},
+{stt:28,name:'Đào Xuân Khiên',area:2880,field:'An Phú - Chúc Sơn'},
+{stt:29,name:'Đào Xuân Huỳnh (Thắng)',area:576,field:'An Phú - Chúc Sơn'},
+{stt:30,name:'Nguyễn Chí Tiến',area:360,field:'An Phú - Chúc Sơn'},
+{stt:31,name:'Đào Xuân Hải',area:720,field:'An Phú - Chúc Sơn'},
+{stt:32,name:'Lê Chí Trụ',area:412,field:'An Phú - Chúc Sơn'},
+{stt:33,name:'Nguyễn Chí Phú',area:720,field:'An Phú - Chúc Sơn'},
+{stt:34,name:'Trịnh Hữu Nhạ',area:335,field:'An Phú - Chúc Sơn'},
+{stt:35,name:'Nguyễn Chí Sơn (Luyến)',area:734,field:'An Phú - Chúc Sơn'},
+{stt:36,name:'Đặng Đình Chiến',area:747,field:'An Phú - Chúc Sơn'},
+{stt:37,name:'Nguyễn Chí Khoa (Chiêm)',area:868,field:'An Phú - Chúc Sơn'},
+{stt:38,name:'Nguyễn Chí Hiền',area:720,field:'An Phú - Chúc Sơn'},
+{stt:39,name:'Lê Thị Lơ',area:797,field:'An Phú - Chúc Sơn'},
+{stt:40,name:'Nguyễn Chí Mão',area:450,field:'An Phú - Chúc Sơn'},{stt:41,name:'Đào Xuân Kinh',area:1104,field:'An Phú - Chúc Sơn'},
+{stt:42,name:'Trịnh Hữu Cầu',area:608,field:'An Phú - Chúc Sơn'},
+{stt:43,name:'Đặng Đình Thuyết',area:360,field:'An Phú - Chúc Sơn'},
+{stt:44,name:'Nguyễn Chí An (Thảo)',area:360,field:'An Phú - Chúc Sơn'},
+{stt:45,name:'Lê Thị Na',area:1248,field:'An Phú - Chúc Sơn'},
+{stt:46,name:'Nguyễn Chí Giáo',area:432,field:'An Phú - Chúc Sơn'},
+{stt:47,name:'Lê Thị Hợi',area:360,field:'An Phú - Chúc Sơn'},
+{stt:48,name:'Đào Xuân Quỳnh',area:596,field:'An Phú - Chúc Sơn'},
+{stt:49,name:'Nguyễn Chí Bằng',area:1368,field:'An Phú - Chúc Sơn'},
+{stt:50,name:'Nguyễn Chí Canh',area:2952,field:'An Phú - Chúc Sơn'},
+{stt:51,name:'Nguyễn Thị Viên',area:1440,field:'An Phú - Chúc Sơn'},
+{stt:52,name:'Nguyễn Thị Thìn',area:768,field:'An Phú - Chúc Sơn'},
+{stt:53,name:'Đào Xuân Chiến',area:432,field:'An Phú - Chúc Sơn'},
+{stt:54,name:'Nguyễn Chí Túc',area:720,field:'An Phú - Chúc Sơn'},
+{stt:55,name:'Đào Xuân Thành',area:588,field:'An Phú - Chúc Sơn'},
+{stt:56,name:'Trịnh Hữu Quý',area:380,field:'An Phú - Chúc Sơn'},
+{stt:57,name:'Đào Xuân Vệ',area:840,field:'An Phú - Chúc Sơn'},
+{stt:58,name:'Đặng Thị Thiết',area:565,field:'An Phú - Chúc Sơn'},
+{stt:59,name:'Nguyễn Chí Trường',area:1656,field:'An Phú - Chúc Sơn'},
+{stt:60,name:'Nguyễn Thị Hiền',area:360,field:'An Phú - Chúc Sơn'},
+{stt:61,name:'Đặng Đình Bào',area:1133,field:'An Phú - Chúc Sơn'},
+{stt:62,name:'Đào Xuân Thiên',area:460,field:'An Phú - Chúc Sơn'},
+{stt:63,name:'Nguyễn Chí Hùng (Thuý)',area:768,field:'An Phú - Chúc Sơn'},
+{stt:64,name:'Lê Thị Sáu',area:450,field:'An Phú - Chúc Sơn'},
+{stt:65,name:'Đào Xuân Cận',area:731,field:'An Phú - Chúc Sơn'},
+{stt:66,name:'Đào Xuân Dậu',area:840,field:'An Phú - Chúc Sơn'},
+{stt:67,name:'Trịnh Thị Hiên',area:360,field:'An Phú - Chúc Sơn'},
+{stt:68,name:'Đào Xuân Hảo',area:1440,field:'An Phú - Chúc Sơn'},
+{stt:69,name:'Lê Chí Dịch',area:768,field:'An Phú - Chúc Sơn'},
+{stt:70,name:'Trịnh Xuân Trường',area:2304,field:'An Phú - Chúc Sơn'},
+{stt:71,name:'Trịnh Hữu Hạ',area:1200,field:'An Phú - Chúc Sơn'},
+{stt:72,name:'Trịnh Hữu Tuất',area:2208,field:'An Phú - Chúc Sơn'},
+{stt:73,name:'Trọnh Trọng Năng',area:203,field:'An Phú - Chúc Sơn'},
+{stt:74,name:'Trịnh Thị Đồi',area:640,field:'An Phú - Chúc Sơn'},
+{stt:75,name:'Nguyễn Thị Cúc',area:360,field:'An Phú - Chúc Sơn'},
+{stt:76,name:'Nguyễn Chí Soát',area:846,field:'An Phú - Chúc Sơn'},
+{stt:77,name:'Nguyễn Chí Khoát',area:720,field:'An Phú - Chúc Sơn'},
+{stt:78,name:'Nguyễn Chí Thặng',area:2016,field:'An Phú - Chúc Sơn'},
+{stt:79,name:'Trịnh Hữu Hiền',area:360,field:'An Phú - Chúc Sơn'},
+{stt:80,name:'Trịnh Hữu Thức',area:540,field:'An Phú - Chúc Sơn'},
+{stt:81,name:'Nguyễn Chí Cảnh',area:360,field:'An Phú - Chúc Sơn'},
+{stt:82,name:'Lê Thị Lên',area:720,field:'An Phú - Chúc Sơn'},
+{stt:83,name:'Nguyễn Thị Chỉnh',area:720,field:'An Phú - Chúc Sơn'},
+{stt:84,name:'Trịnh Hữu Phương',area:720,field:'An Phú - Chúc Sơn'},
+{stt:85,name:'Nguyễn Chí Xuân',area:360,field:'An Phú - Chúc Sơn'},
+{stt:86,name:'Lê Chí Quý',area:940,field:'An Phú - Chúc Sơn'},
+{stt:87,name:'Đặng Đình Đoan',area:2160,field:'An Phú - Chúc Sơn'},
+{stt:88,name:'Lê Chí Chúc',area:864,field:'An Phú - Chúc Sơn'},
+{stt:89,name:'Đặng Đình Tạo',area:816,field:'An Phú - Chúc Sơn'},
+{stt:90,name:'Lê Chí Bản',area:3008,field:'An Phú - Chúc Sơn'},
+{stt:91,name:'Đào Thị Hoạt',area:724,field:'An Phú - Chúc Sơn'},
+{stt:92,name:'Lê Chí Hồng',area:2592,field:'An Phú - Chúc Sơn'},
+{stt:93,name:'Đặng Hải Hoàn (Lan)',area:728,field:'An Phú - Chúc Sơn'},
+{stt:94,name:'Lê Chí Sùng',area:552,field:'An Phú - Chúc Sơn'},
+{stt:95,name:'Lê Chí Giang',area:506,field:'An Phú - Chúc Sơn'},
+{stt:96,name:'Trịnh Hữu Nhu',area:360,field:'An Phú - Chúc Sơn'},
+{stt:97,name:'Đặng Đình Du',area:648,field:'An Phú - Chúc Sơn'},
+{stt:98,name:'Lê Chí Viên',area:360,field:'An Phú - Chúc Sơn'},
+{stt:99,name:'Nguyễn Chí Tuệ',area:840,field:'An Phú - Chúc Sơn'},
+{stt:100,name:'Lê Chí Phúc',area:720,field:'An Phú - Chúc Sơn'},
+{stt:101,name:'Lê Chí Sơn (Thao)',area:1476,field:'An Phú - Chúc Sơn'},
+{stt:102,name:'Đào Thị Mến',area:447,field:'An Phú - Chúc Sơn'},
+{stt:103,name:'Lê Chí Luân',area:936,field:'An Phú - Chúc Sơn'},
+{stt:104,name:'Lê Chí Hội',area:360,field:'An Phú - Chúc Sơn'},
+{stt:105,name:'Lê Chí Hợi',area:804,field:'An Phú - Chúc Sơn'},
+{stt:106,name:'Lê Chí Trường',area:2592,field:'An Phú - Chúc Sơn'},
+{stt:107,name:'Trịnh Thị Thạo',area:900,field:'An Phú - Chúc Sơn'},
+{stt:108,name:'Trịnh Thị Nhẫn',area:1872,field:'An Phú - Chúc Sơn'},
+{stt:109,name:'Trịnh Hữu Thới',area:360,field:'An Phú - Chúc Sơn'},
+{stt:110,name:'Trịnh Hữu Thuận',area:750,field:'An Phú - Chúc Sơn'},
+{stt:111,name:'Đào Xuân Trường',area:2448,field:'An Phú - Chúc Sơn'},
+{stt:112,name:'Lê Chí Hiên',area:600,field:'An Phú - Chúc Sơn'},
+{stt:113,name:'Nguyễn Chí Quý',area:1656,field:'An Phú - Chúc Sơn'},
+{stt:114,name:'Đào Xuân Tùng',area:449,field:'An Phú - Chúc Sơn'}
+];function render(data){
+
+const list=document.getElementById("list");
+const tbody=document.getElementById("tbody");
+const count=document.getElementById("count");
+
+count.innerHTML=data.length+" hộ";
+
+tbody.innerHTML="";
+
+const cards=list.querySelectorAll(".card");
+cards.forEach(c=>c.remove());
+
+data.forEach(item=>{
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${item.stt}</td>
+<td>${item.name}</td>
+<td>${Number(item.area).toLocaleString("vi-VN")} m²</td>
+<td>${item.field}</td>
+`;
+
+tbody.appendChild(tr);
+
+const card=document.createElement("div");
+
+card.className="card";
+
+card.innerHTML=`
+<h4>${item.name}</h4>
+<p><b>STT:</b> ${item.stt}</p>
+<p><b>Diện tích:</b> ${Number(item.area).toLocaleString("vi-VN")} m²</p>
+<p><b>Xứ đồng:</b> ${item.field}</p>
+`;
+
+list.appendChild(card);
+
+});
+
+}
+
+render(households);
+
+document
+.getElementById("searchInput")
+.addEventListener("input",function(){
+
+const keyword=this.value
+.toLowerCase()
+.trim();
+
+if(keyword===""){
+
+render(households);
+
+return;
+
+}
+
+const result=households.filter(x=>
+
+String(x.stt).includes(keyword) ||
+
+x.name.toLowerCase().includes(keyword) ||
+
+String(x.area).includes(keyword) ||
+
+x.field.toLowerCase().includes(keyword)
+
+);
+
+render(result);
+
+});
+
+document
+.getElementById("searchInput")
+.addEventListener("keydown",function(e){
+
+if(e.key==="Escape"){
+
+this.value="";
+
+render(households);
+
+}
+
+});
+
+window.addEventListener("resize",()=>{
+
+map.invalidateSize();
+
+});
+
+setTimeout(()=>{
+
+map.invalidateSize();
+
+},500);
+
+</script>
+
+</body>
+
+</html>
