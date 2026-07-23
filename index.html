@@ -4,57 +4,11 @@
 border-radius:22px 22px 0 0;padding:10px;overflow-y:auto;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
 #handle{width:70px;height:6px;background:#bbb;border-radius:99px;margin:4px auto 10px}
 @media(min-width:768px){#panel{left:auto;right:20px;top:20px;bottom:20px;width:420px;height:auto;border-radius:16px}}
-table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px;font-size:16px}</style>
-<style>
-:root{
---green:#2e7d32;--green2:#66bb6a;--bg:#f4fbf5;
-}
-body{background:var(--bg)!important;font-family:Arial,sans-serif;}
-#htxHeader{position:fixed;top:10px;left:10px;right:10px;z-index:9999;background:#fff;
-border-radius:18px;padding:12px 16px;box-shadow:0 4px 16px rgba(0,0,0,.15);
-border:2px solid #c8e6c9}
-#htxHeader .row{display:flex;align-items:center;gap:12px}
-#htxHeader img{width:58px;height:58px;border-radius:50%}
-#htxHeader h2{margin:0;color:#1b5e20;font-size:20px}
-#htxHeader h3{margin:4px 0;color:#388e3c;font-size:16px}
-#htxHeader .meta{display:flex;justify-content:space-between;font-weight:bold;color:#2e7d32}
-#toggleList{float:right;border:none;background:var(--green);color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer}
-.list-collapsed #listPanel{display:none!important;}
-</style>
-</head><body>
-<div id="htxHeader">
-<div class="row">
-<img src="1759977964-logo-htx.jpg">
-<div style="flex:1">
-<h2>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</h2>
-<h3>Vùng sản xuất Rau VietGAP</h3>
-<div class="meta">
-<span>🌱 114 hộ sản xuất</span>
-<span>📍 96.007 m²</span>
-</div>
-</div>
-<button id="toggleList">✕</button>
-</div>
-</div>
-<script>
-window.addEventListener('load',()=>{
- const btn=document.getElementById('toggleList');
- const panel=document.querySelector('#listPanel,.bottom-sheet,.sidebar,.panel');
- if(panel){panel.id='listPanel';}
- btn.onclick=()=>{
-   document.body.classList.toggle('list-collapsed');
-   btn.textContent=document.body.classList.contains('list-collapsed')?'+':'✕';
- };
- if(window.polygon){
-   try{
-    polygon.setStyle({fillOpacity:0,color:'#ff8c00',weight:3});
-    if(polygon.closePopup) polygon.closePopup();
-   }catch(e){}
- }
-});
-</script>
-
-<div id=map></div><div id=panel><div id='handle'></div><b>HTX DVNNTH Chúc Sơn</b><br>114 hộ - 96,007 m²<br><input id=q placeholder='Tìm kiếm'><table><thead><tr><th>STT</th><th>Hộ</th><th>DT</th><th>Xứ đồng</th></tr></thead><tbody id=tb></tbody></table></div>
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{border:1px solid #ddd;padding:4px}input{width:100%;padding:8px;font-size:16px}
+.drag-handle{width:60px;height:6px;border-radius:3px;background:#cfcfcf;margin:8px auto 10px;cursor:pointer}
+.sheet-collapsed #listContent{display:none}
+</style></head><body>
+<div id=map></div><div id='header' style="position:fixed;top:12px;left:12px;right:12px;z-index:1000;background:#fff;border:2px solid #cfe8cf;border-radius:20px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.2)"><div style='display:flex;align-items:center'><img src='1759977964-logo-htx.jpg' style='width:56px;height:56px;border-radius:50%;object-fit:cover'><div style='flex:1;margin-left:12px'><div style='font-size:20px;font-weight:bold;color:#1b5e20'>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn</div><div style='color:#2e7d32;font-size:16px;font-weight:bold'>Vùng sản xuất Rau VietGAP</div><div style='margin-top:6px;color:#2e7d32;font-weight:bold'>🌱114 hộ sản xuất &nbsp;&nbsp; 📍96.007 m²</div></div><button id='toggle' style='width:42px;height:42px;border-radius:50%;border:none;background:#2e7d32;color:#fff;font-size:24px'>−</button></div></div><div id=panel style='bottom:0'><div id='handle'></div><b>HTX DVNNTH Chúc Sơn</b><br>114 hộ - 96,007 m²<br><input id=q placeholder='Tìm kiếm'><table><thead><tr><th>STT</th><th>Hộ</th><th>DT</th><th>Xứ đồng</th></tr></thead><tbody id=tb></tbody></table></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 let lastTouchEnd=0;
 document.addEventListener('touchend',function(e){
@@ -63,15 +17,15 @@ document.addEventListener('touchend',function(e){
  lastTouchEnd=now;
 },{passive:false});
 
-</script>
+document.getElementById('toggle').onclick=function(){const p=document.getElementById('panel');if(p.style.display==='none'){p.style.display='block';this.innerHTML='−';}else{p.style.display='none';this.innerHTML='+';}};</script>
 <script>
 const map=L.map('map').setView([20.9141,105.7183],17);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
 const pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],[20.912075,105.718131]];
-const poly=L.polygon(pts,{color:'#ff7a00',weight:4,fillColor:'#32b44a',fillOpacity:.35}).addTo(map);
+const poly=L.polygon(pts,{color:'#ff7a00',weight:4,fillColor:'#32b44a',fillOpacity:0}).addTo(map);
 const icon=new L.Icon({iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',iconSize:[25,41],iconAnchor:[12,41],shadowSize:[41,41]});
 pts.forEach(p=>L.marker(p,{icon}).addTo(map));
-poly.bindPopup('<b>Vùng sản xuất Rau VietGAP</b><br>HTX DVNNTH Chúc Sơn').openPopup();
+
 map.fitBounds(poly.getBounds(),{padding:[40,40]});
 const data=[
 {stt:1,name:'Lê Chí Thân',area:573,field:'An Phú - Chúc Sơn'},
@@ -192,4 +146,15 @@ const data=[
 function render(arr){tb.innerHTML=arr.map(x=>`<tr><td>${x.stt}</td><td>${x.name}</td><td>${x.area.toLocaleString('vi-VN')} m²</td><td>${x.field}</td></tr>`).join('');}
 render(data);
 q.oninput=e=>{let k=e.target.value.toLowerCase();render(data.filter(x=>x.name.toLowerCase().includes(k)||String(x.stt).includes(k)||x.field.toLowerCase().includes(k)));};
-</script></body></html>
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const panel=document.querySelector('#listPanel')||document.body;
+ const content=document.getElementById('listContent');
+ const handle=document.getElementById('dragHandle');
+ if(handle){
+  handle.addEventListener('click',()=>panel.classList.toggle('sheet-collapsed'));
+ }
+});
+</script>
+</body></html>
