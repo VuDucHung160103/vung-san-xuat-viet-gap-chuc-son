@@ -2,69 +2,98 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Vùng sản xuất VietGAP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vùng sản xuất Rau VietGAP</title>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <style>
-html,body{margin:0;height:100%}
-#map{height:100vh;width:100%}
-.panel{
-position:absolute;left:50%;top:12px;transform:translateX(-50%);
-z-index:1000;background:#fff;padding:10px 16px;border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,.35);font-family:Arial,sans-serif;
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
 }
-.btn{display:inline-block;margin-top:8px;padding:6px 10px;background:#1976d2;color:#fff;
-text-decoration:none;border-radius:4px}
+#map{
+    width:100%;
+    height:100vh;
+}
 </style>
 </head>
+
 <body>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-const map=L.map('map');
 
+const map = L.map("map");
+
+// Ảnh vệ tinh Esri
 L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-{maxZoom:19, attribution:'© Esri'}
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+        maxZoom:19,
+        attribution:"© Esri"
+    }
 ).addTo(map);
 
+// Tên đường
 L.tileLayer(
-'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-{maxZoom:19}
+    "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+    {
+        maxZoom:19
+    }
 ).addTo(map);
 
-const pts=[
-[20.913361,105.720369],
-[20.915914,105.718817],
-[20.915481,105.715700],
-[20.912075,105.718131]
+// 4 góc GPS
+const points = [
+    [20.913361,105.720369],
+    [20.915914,105.718817],
+    [20.915481,105.715700],
+    [20.912075,105.718131]
 ];
 
+// Polygon
 const poly = L.polygon(points,{
-    color:'#ff6f00',
+    color:"#ff6f00",
     weight:3,
-    fillColor:'#00ff66',
-    fillOpacity:0.25
+    fillColor:"#00cc66",
+    fillOpacity:0.35
 }).addTo(map);
 
+// Marker
 points.forEach((p,i)=>{
-    L.marker(p).addTo(map).bindPopup("GPS " + (i+1));
+    L.marker(p).addTo(map);
 });
 
-map.fitBounds(poly.getBounds(), { padding:[30,30] });
+// Popup
+poly.bindPopup(
+    "<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn",
+    {
+        autoClose:false,
+        closeOnClick:false
+    }
+);
 
-poly.bindPopup(`
-<b>Vùng sản xuất Rau VietGAP</b><br>
-HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn
-`);
-
-// Sau khi bản đồ tải xong thì tự mở popup
-map.whenReady(function () {
-    setTimeout(function () {
-        poly.openPopup();
-    }, 500);
+// Zoom tới vùng
+map.fitBounds(poly.getBounds(),{
+    padding:[30,30],
+    animate:false
 });
+
+// Sau khi zoom xong thì tự mở popup
+map.once("load",function(){
+    poly.openPopup();
+});
+
+// Dự phòng cho mọi trình duyệt
+setTimeout(function(){
+    poly.openPopup();
+},500);
+
 </script>
+
 </body>
 </html>
