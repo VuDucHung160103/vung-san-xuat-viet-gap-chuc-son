@@ -22,7 +22,7 @@ const pts=[[20.913361,105.720369],[20.915914,105.718817],[20.915481,105.715700],
 const poly=L.polygon(pts,{color:'#ff7a00',weight:4,fillColor:'#32b44a',fillOpacity:.35}).addTo(map);
 const icon=new L.Icon({iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',iconSize:[25,41],iconAnchor:[12,41],shadowSize:[41,41]});
 pts.forEach(p=>L.marker(p,{icon}).addTo(map));
-poly.bindPopup('<b>Vùng sản xuất Rau VietGAP</b><br>HTX DVNNTH Chúc Sơn').openPopup();
+poly.bindPopup('<b>Vùng sản xuất Rau VietGAP</b><br>HTX Dịch vụ nông nghiệp tổng hợp Chúc Sơn').openPopup();
 map.fitBounds(poly.getBounds(),{padding:[40,40]});
 const data=[
 {stt:1,name:'Lê Chí Thân',area:573,field:'An Phú - Chúc Sơn'},
